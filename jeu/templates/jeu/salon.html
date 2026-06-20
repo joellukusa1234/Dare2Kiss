@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action ou Vérité</title>
+    <style>
+        /* === RESET & VARIABLES === */
+        :root {
+            --bg-dark: #09090b;
+            --card-dark: #18181b;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --gradient-accent: linear-gradient(135deg, #ec4899, #8b5cf6);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+
+        /* === GESTION DES ÉCRANS === */
+        .screen { display: none; width: 100%; max-width: 500px; margin: 0 auto; min-height: 100vh; padding: 40px 24px; flex-direction: column; animation: fadeSlideIn 0.4s ease-out forwards; }
+        .screen.active { display: flex; }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* === ÉCRAN 1 : ACCUEIL === */
+        .welcome-screen { justify-content: space-between; align-items: center; text-align: center; padding-top: 80px; padding-bottom: 60px; }
+        .welcome-icon { margin-bottom: 20px; display: flex; justify-content: center; }
+        .welcome-icon svg { width: 100px; height: 100px; stroke: url(#grad1); }
+        .welcome-title { font-size: 2rem; font-weight: 700; margin-bottom: 15px; }
+        .welcome-desc { font-size: 1.1rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 40px; }
+        .btn-gradient { width: 100%; max-width: 300px; background: var(--gradient-accent); color: white; border: none; padding: 18px; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4); }
+        .btn-gradient:active { opacity: 0.8; transform: scale(0.98); }
+
+        /* === ÉCRAN 2 : SALON (GRILLE) === */
+        .top-bar { display: flex; align-items: center; margin-bottom: 30px; }
+        .back-btn { background: #27272a; border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .salon-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .salon-subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 30px; }
+        
+        .grid-categories { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; }
+        .category-card { background: var(--card-dark); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 1; cursor: pointer; transition: transform 0.2s, border-color 0.2s; border: 1px solid transparent; }
+        .category-card:active { transform: scale(0.95); border-color: #ec4899; }
+        
+        /* Styles des icônes SVGs */
+        .cat-icon { margin-bottom: auto; }
+        .cat-icon svg { width: 40px; height: 40px; stroke-width: 1.5; transition: transform 0.3s; }
+        .category-card:hover .cat-icon svg { transform: scale(1.1); }
+        .cat-name { font-size: 1.1rem; font-weight: 600; text-align: left; }
+
+        /* === SIGNATURE NEON GLASSMORPHISM === */
+        .signature-container {
+            width: 100%;
+            background: rgba(24, 24, 27, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            border-radius: 20px;
+            padding: 14px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+        .signature-text {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .signature-name {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: inline-block;
+            margin-left: 6px;
+            text-shadow: 
+                0 0 4px #fff,
+                0 0 12px #ec4899,
+                0 0 25px #8b5cf6;
+            animation: neonPulse 2s infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            from { text-shadow: 0 0 4px #fff, 0 0 10px #ec4899, 0 0 20px #8b5cf6; }
+            to { text-shadow: 0 0 6px #fff, 0 0 18px #ec4899, 0 0 35px #8b5cf6; }
+        }
+
+        /* === ÉCRAN 3 : JEU === */
+        .game-header { text-align: center; margin-bottom: 30px; font-size: 1.2rem; font-weight: bold; background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .actions-wrapper { display: flex; gap: 15px; margin-bottom: 30px; justify-content: center; }
+        .btn-action { flex: 1; padding: 15px; border-radius: 15px; border: none; font-size: 1.1rem; font-weight: bold; color: white; cursor: pointer; }
+        .btn-action.action { background: #18181b; border: 2px solid #ec4899; }
+        .btn-action.verite { background: #18181b; border: 2px solid #8b5cf6; }
+        
+        .card-container { perspective: 1000px; width: 100%; height: 350px; margin-top: 20px; }
+        .game-card { width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; position: relative; border-radius: 24px; }
+        .game-card.is-flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; padding: 30px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card-front { background: var(--card-dark); border: 1px solid #27272a; }
+        .card-back { background: var(--gradient-accent); transform: rotateY(180deg); font-size: 1.3rem; font-weight: 600; line-height: 1.5; padding: 24px; }
+        .card-icon svg { width: 60px; height: 60px; stroke: var(--text-muted); margin-bottom: 20px; }
+
+        /* Animation de vibration lors du tirage de carte */
+        @keyframes suspenseShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-4px, 4px) rotate(-1.5deg); }
+            40% { transform: translate(4px, -4px) rotate(1.5deg); }
+            60% { transform: translate(-4px, -4px) rotate(-1deg); }
+            80% { transform: translate(4px, 4px) rotate(1deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ec4899" />
+        <stop offset="100%" stop-color="#8b5cf6" />
+      </linearGradient>
+    </svg>
+
+    <div id="screen-welcome" class="screen active welcome-screen">
+        <div>
+            <div class="welcome-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                </svg>
+            </div>
+            <h1 class="welcome-title">KISS&LOVE</h1>
+            <p class="welcome-desc">
+                La première plateforme du jeu Action ou Vérité. À jouer<br>
+                entre amis ou en couple pour des soirées de jeu pimentées..
+            </p>
+        </div>
+        <button class="btn-gradient" onclick="goToScreen('screen-categories')">Se lancer</button>
+    </div>
+
+    <div id="screen-categories" class="screen">
+        <div class="top-bar">
+            <button class="back-btn" onclick="goToScreen('screen-welcome')">←</button>
+        </div>
+
+        <div class="signature-container">
+            <span class="signature-text">by</span>
+            <span class="signature-name">Joel Lukusa</span>
+        </div>
+        
+        <h2 class="salon-title">Choisis une catégorie</h2>
+        <p class="salon-subtitle">Chaque categorie contient des questions propre a elle meme.</p>
+        
+        <div class="grid-categories">
+            <div class="category-card" onclick="selectCategory('amical')">
+                <div class="cat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5-2.5a1 1 0 1 0-3-3l-3.8 3.8a6 6 0 0 0-1.7 4.9"/><path d="M18.9 10.3c.4.8.7 1.8.7 2.7 0 2.2-1.8 4-4 4-.9 0-1.9-.3-2.7-.7"/><path d="M3 14h3"/><path d="M5 11l-2 3 2 3"/>
+                    </svg>
+                </div>
+                <div class="cat-name">Amical</div>
+            </div>
+            
+            <div class="category-card" onclick="selectCategory('amoureux')">
+                <div class="cat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                    </svg>
+                </div>
+                <div class="cat-name">Amoureux</div>
+            </div>
+
+            <div class="category-card" onclick="selectCategory('shhhh')">
+                <div class="cat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12c3-3 6-4 9-4s6 1 9 4c-3 3-6 4-9 4s-6-1-9-4Z" />
+                        <path d="M3 12c3 1.5 6 2 9 2s6-.5 9-2" />
+                        <rect x="10" y="4" width="4" height="14" rx="2" fill="#18181b" stroke="#c084fc" stroke-width="1.5" />
+                        <line x1="12" y1="6" x2="12" y2="8" stroke="#c084fc" />
+                    </svg>
+                </div>
+                <div class="cat-name">Shhhh</div>
+            </div>
+
+            <div class="category-card" onclick="selectCategory('inavouable')">
+                <div class="cat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16.89 15.47a9 9 0 1 0-9.78 0"/><path d="M12 21a9 9 0 0 0 3-17.21a9 9 0 0 0-12 0"/><path d="M12 11c0 2.21-1.79 4-4 4s-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4Z"/><path d="M12 11c0 2.21 1.79 4 4 4s4-1.79 4-4s-1.79-4-4-4s-4 1.79-4 4Z"/>
+                    </svg>
+                </div>
+                <div class="cat-name">Inavouable</div>
+            </div>
+
+            <div class="category-card" onclick="selectCategory('dilemme')">
+                <div class="cat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/><path d="M18 8a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h10Z"/>
+                    </svg>
+                </div>
+                <div class="cat-name">Dilemmes</div>
+            </div>
+
+            <div class="category-card" onclick="selectCategory('brise-glace')">
+                <div class="cat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m11.75 3.5.75-.75 1.5 1.5-1.5 1.5-.75-.75L9 8.25l.75.75L8.25 10.5 6.75 9l1.5-1.5.75.75 1.5-1.5L9.75 6 12 3.75l-.25-.25Z"/><path d="M13 13.5l1.5 1.5"/><path d="m17.25 3 2.25 2.25-1.5 1.5-2.25-2.25Z"/><path d="M17 11h2"/><path d="M3 13h1"/><path d="M15 15.5 17 17"/><path d="M12 17h.5"/>
+                    </svg>
+                </div>
+                <div class="cat-name">Brise-Glace</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div class="top-bar">
+            <button class="back-btn" onclick="goToScreen('screen-categories')">←</button>
+        </div>
+        
+        <div class="game-header" id="display-category">CATÉGORIE</div>
+
+        <div class="actions-wrapper">
+            <button class="btn-action action" onclick="playTurn('action')">Action</button>
+            <button class="btn-action verite" onclick="playTurn('verite')">Vérité</button>
+        </div>
+
+        <div class="card-container">
+            <div class="game-card" id="playing-card">
+                <div class="card-face card-front">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M8 6h.01"/><path d="M16 18h.01"/>
+                        </svg>
+                    </div>
+                    <p style="color: var(--text-muted);">Fais un choix pour révéler la carte.</p>
+                </div>
+                <div class="card-face card-back" id="question-text">
+                    La question s'affichera ici...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const roomName = "{{ room_name }}"; 
+        let currentCategory = "";
+        
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/jeu/' + roomName + '/');
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const playingCard = document.getElementById('playing-card');
+            const questionText = document.getElementById('question-text');
+
+            // 1. Reset l'affichage de carte retournée
+            playingCard.classList.remove('is-flipped');
+            
+            // 2. Déclenchement de la vibration de suspense
+            playingCard.style.animation = "suspenseShake 0.3s ease-in-out";
+
+            setTimeout(() => {
+                // 3. Injection du texte de la question tirée au sort
+                questionText.innerText = data.question;
+                
+                // 4. Arrêt de la vibration et retournement final fluide
+                playingCard.style.animation = "";
+                playingCard.classList.add('is-flipped');
+            }, 300);
+        };
+
+        function goToScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            if (screenId === 'screen-categories') {
+                document.getElementById('playing-card').classList.remove('is-flipped');
+            }
+        }
+
+        function selectCategory(cat) {
+            currentCategory = cat;
+            document.getElementById('display-category').innerText = cat.toUpperCase();
+            goToScreen('screen-game');
+        }
+
+        function playTurn(type) {
+            // Demande l'envoi d'une question aléatoire au serveur
+            socket.send(JSON.stringify({
+                'action': type, 
+                'categorie': currentCategory
+            }));
+        }
+    </script>
+</body>
+</html>
