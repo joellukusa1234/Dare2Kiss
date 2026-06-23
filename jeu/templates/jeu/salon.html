@@ -238,28 +238,24 @@
         </div>
     </div>
 
-    <script>
+   <script>
         const roomName = "{{ room_name }}"; 
         let currentCategory = "";
         
-        const socket = new WebSocket('ws://' + window.location.host + '/ws/jeu/' + roomName + '/');
+        // --- LA MODIFICATION EST ICI (ws:// devient dynamique wss://) ---
+        const wsScheme = window.location.protocol === "https:" ? "wss://" : "ws://";
+        const socket = new WebSocket(wsScheme + window.location.host + '/ws/jeu/' + roomName + '/');
 
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             const playingCard = document.getElementById('playing-card');
             const questionText = document.getElementById('question-text');
 
-            // 1. Reset l'affichage de carte retournée
             playingCard.classList.remove('is-flipped');
-            
-            // 2. Déclenchement de la vibration de suspense
             playingCard.style.animation = "suspenseShake 0.3s ease-in-out";
 
             setTimeout(() => {
-                // 3. Injection du texte de la question tirée au sort
                 questionText.innerText = data.question;
-                
-                // 4. Arrêt de la vibration et retournement final fluide
                 playingCard.style.animation = "";
                 playingCard.classList.add('is-flipped');
             }, 300);
@@ -280,7 +276,6 @@
         }
 
         function playTurn(type) {
-            // Demande l'envoi d'une question aléatoire au serveur
             socket.send(JSON.stringify({
                 'action': type, 
                 'categorie': currentCategory
